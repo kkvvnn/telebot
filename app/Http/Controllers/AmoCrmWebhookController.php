@@ -31,7 +31,7 @@ class AmoCrmWebhookController extends Controller
 
 
         // Извлекаем кастомные поля в удобный ассоциативный массив
-            $customFields = $this->parseCustomFields($lead['custom_fields'] ?? []);
+            $customFields = $this->parseCustomFields($leadStatus['custom_fields'] ?? []);
 
             // Например, получаем «Ссылка на счет» и «Форма оплаты»
             $invoiceLink = $customFields['Ссылка на счет'] ?? null;
