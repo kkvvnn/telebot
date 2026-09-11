@@ -29,9 +29,18 @@ class AmoCrmWebhookController extends Controller
         $targetStatusId = 88517678; // ЗАМЕНИТЕ НА ВАШ ID ЭТАПА
 //        $targetStatusId = 82364358; // ЗАМЕНИТЕ НА ВАШ ID ЭТАПА
 
+
+        // Извлекаем кастомные поля в удобный ассоциативный массив
+            $customFields = $this->parseCustomFields($lead['custom_fields'] ?? []);
+
+            // Например, получаем «Ссылка на счет» и «Форма оплаты»
+            $invoiceLink = $customFields['Ссылка на счет'] ?? null;
+            $paymentForm = $customFields['Форма оплаты'] ?? null;
+
+
         // 5. Если сделка перешла на нужный этап — отправляем в Telegram
         if ($newStatusId == $targetStatusId) {
-           $this->sendTelegramNotification($leadId, $newStatusId, $pipelineId, $title);
+           $this->sendTelegramNotification($leadId, $newStatusId, $pipelineId, $invoiceLink);
         }
 
         // 6. Возвращаем успешный ответ, чтобы amoCRM не повторяла запрос
@@ -50,7 +59,7 @@ class AmoCrmWebhookController extends Controller
 
         $message = "📌 *Сделка перешла на новый этап!*\n\n"
             . "🆔 ID сделки: `{$leadId}`\n"
-            . "🆔 Название: `{$title}`\n"
+            . "🆔 Ссылка: `{$title}`\n"
             . "📊 Новый этап: `{$statusId}`\n"
             . "🔀 Воронка: `{$pipelineId}`\n"
             . "🕒 Время: " . now()->format('d.m.Y H:i:s');
@@ -72,4 +81,46 @@ class AmoCrmWebhookController extends Controller
 
         Log::info('Telegram response', ['body' => $response->body(), 'status' => $response->status()]);
     }
+
+    /**
+     * Преобразует custom_fields в ассоциативный массив [название_поля => значение]
+     */
+    private function parseCustomFields(array $fields): array
+    {
+        $result = [];
+
+        foreach ($fields as $field) {
+            $name = $field['name'] ?? null;
+            if (!$name) {
+                continue;
+            }
+
+            $values = $field['values'] ?? null;
+            if ($values === null) {
+                continue;
+            }
+
+            // Если values — объект (ассоциативный массив)
+            if (is_array($values) && !isset($values[0])) {
+                $result[$name] = $values['value'] ?? null;
+            }
+            // Если values — массив объектов
+            elseif (is_array($values)) {
+                $vals = [];
+                foreach ($values as $item) {
+                    if (is_array($item) && isset($item['value'])) {
+                        $vals[] = $item['value'];
+                    } elseif (is_string($item)) {
+                        $vals[] = $item;
+                    }
+                }
+                $result[$name] = implode(', ', $vals);
+            } else {
+                $result[$name] = $values;
+            }
+        }
+
+        return $result;
+    }
+
 }
