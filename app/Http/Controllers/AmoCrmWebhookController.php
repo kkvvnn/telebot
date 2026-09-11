@@ -23,6 +23,7 @@ class AmoCrmWebhookController extends Controller
         $leadId = $leadStatus['id'] ?? null;
         $newStatusId = $leadStatus['status_id'] ?? null;
         $pipelineId = $leadStatus['pipeline_id'] ?? null;
+        $title = $leadStatus['name'] ?? null;
 
         // 4. Укажите ID этапа, при переходе на который нужно отправить уведомление
         $targetStatusId = 88517678; // ЗАМЕНИТЕ НА ВАШ ID ЭТАПА
@@ -30,14 +31,14 @@ class AmoCrmWebhookController extends Controller
 
         // 5. Если сделка перешла на нужный этап — отправляем в Telegram
         if ($newStatusId == $targetStatusId) {
-           $this->sendTelegramNotification($leadId, $newStatusId, $pipelineId);
+           $this->sendTelegramNotification($leadId, $newStatusId, $pipelineId, $title);
         }
 
         // 6. Возвращаем успешный ответ, чтобы amoCRM не повторяла запрос
         return response()->json(['status' => 'success'], 200);
     }
 
-    private function sendTelegramNotification($leadId, $statusId, $pipelineId)
+    private function sendTelegramNotification($leadId, $statusId, $pipelineId, $title)
     {
         $botToken = config('services.telegram.bot_token');
         $chatId = config('services.telegram.chat_id');
@@ -49,6 +50,7 @@ class AmoCrmWebhookController extends Controller
 
         $message = "📌 *Сделка перешла на новый этап!*\n\n"
             . "🆔 ID сделки: `{$leadId}`\n"
+            . "🆔 Название: `{$title}`\n"
             . "📊 Новый этап: `{$statusId}`\n"
             . "🔀 Воронка: `{$pipelineId}`\n"
             . "🕒 Время: " . now()->format('d.m.Y H:i:s');
