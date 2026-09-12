@@ -65,6 +65,7 @@ class AmoCrmWebhookController extends Controller
 
             $delivery_address = $custom_fields['Адрес'] ?? null;
             $url_yandex_map = 'https://yandex.ru/maps/?text=' . urlencode($delivery_address);
+            $url_yandex_map = 'https://yandex.ru/maps/213/moscow/house/chasovaya_ulitsa_32/Z04YcwZoQUYOQFtvfXRwc31iYQ==/?ll=37.518839%2C55.812115&z=17';
 //            $url_yandex_map = 'https://yandex.ru/maps/?text=' . rawurlencode($delivery_address);
 
 //            $url_yandex_map = $this->get_canonical_url_yandex_map($delivery_address);
