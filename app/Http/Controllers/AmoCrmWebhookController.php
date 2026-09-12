@@ -64,6 +64,11 @@ class AmoCrmWebhookController extends Controller
 
             $payment_form = $custom_fields['Форма оплаты'] ?? null;
             $payment_status = $custom_fields['Оплачено'] ?? null;
+            if ($payment_status !== 'Не оплачено') {
+                $payment_status = '✅ Оплачено';
+            } else {
+                $payment_status = '❌ Не оплачено';
+            }
 
             $zakupka = (int) $custom_fields['Всего закупка'] ?? null;
 
@@ -75,7 +80,7 @@ class AmoCrmWebhookController extends Controller
 
         $message = "📌 *Сделка перешла на новый этап!*\n\n"
             . "🆔 Ссылка на счет: `{$invoice_link}`\n"
-            . "🆔 Статус оплаты: `{$payment_status}`\n"
+            . "💲 Статус оплаты: `{$payment_status}`\n"
             . "🕒 Дата доставки: " . $date_delivery_customer;
 
 
