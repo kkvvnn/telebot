@@ -178,7 +178,7 @@ class AmoCrmWebhookController extends Controller
     private function get_canonical_url_yandex_map($address): string
     {
         $response = Http::get('https://geocode-maps.yandex.ru/1.x/', [
-            'apikey' => config('services.yandex.api_key'),
+            'apikey' => config('services.yandex_maps.api_key'),
             'geocode' => $address,
             'format' => 'json',
             'results' => 1,
