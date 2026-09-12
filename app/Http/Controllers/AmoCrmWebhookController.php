@@ -71,10 +71,10 @@ class AmoCrmWebhookController extends Controller
                 $payment_status = '❌ Не оплачено';
             }
 
-            $zakupka = (int) $custom_fields['Всего закупка'] ?? null;
+            $zakupka = (int) ($custom_fields['Всего закупка'] ?? null);
 
-            $online_department = (int) $custom_fields['Итого Онлайн отдел'] ?? null;
-            $forward = (int) $custom_fields['Итого Форвард'] ?? null;
+            $online_department = (int) ($custom_fields['Итого Онлайн отдел'] ?? null);
+            $forward = (int) ($custom_fields['Итого Форвард'] ?? null);
 
             $designer = $custom_fields['Дизайнер'] ?? null;
             $car_driver = $custom_fields['Водитель'] ?? null;
