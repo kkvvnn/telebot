@@ -19,35 +19,76 @@ class AmoCrmWebhookController extends Controller
         }
 
         // 3. Получаем данные о сделке
-        $leadStatus = $request->input('leads.status.0');
-        $leadId = $leadStatus['id'] ?? null;
-        $newStatusId = $leadStatus['status_id'] ?? null;
-        $pipelineId = $leadStatus['pipeline_id'] ?? null;
-        $title = $leadStatus['name'] ?? null;
+        $lead_status = $request->input('leads.status.0');
+        $id = $lead_status['id'] ?? null;
+        $name = $lead_status['name'] ?? null;
+        $status_id = $lead_status['status_id'] ?? null;
+        $old_status_id = $lead_status['old_status_id'] ?? null;
+        $price = $lead_status['price'] ?? null;
+        $price_with_minor_units = $lead_status['price_with_minor_units'] ?? null;
+        $responsible_user_id = $lead_status['responsible_user_id'] ?? null;
+        $last_modified = $lead_status['last_modified'] ?? null;
+        $modified_user_id = $lead_status['modified_user_id'] ?? null;
+        $created_user_id = $lead_status['created_user_id'] ?? null;
+        $date_create = $lead_status['date_create'] ?? null;
+        $pipeline_id = $lead_status['pipeline_id'] ?? null;
+
+        $account_id = $lead_status['account_id'] ?? null;
+
+        $created_at = $lead_status['created_at'] ?? null;
+        $updated_at = $lead_status['updated_at'] ?? null;
 
         // 4. Укажите ID этапа, при переходе на который нужно отправить уведомление
         $targetStatusId = 88517678; // ЗАМЕНИТЕ НА ВАШ ID ЭТАПА
-//        $targetStatusId = 82364358; // ЗАМЕНИТЕ НА ВАШ ID ЭТАПА
-
 
         // Извлекаем кастомные поля в удобный ассоциативный массив
-            $customFields = $this->parseCustomFields($leadStatus['custom_fields'] ?? []);
+            $custom_fields = $this->parseCustomFields($lead_status['custom_fields'] ?? []);
 
             // Например, получаем «Ссылка на счет» и «Форма оплаты»
-            $invoiceLink = $customFields['Ссылка на счет'] ?? null;
-            $paymentForm = $customFields['Форма оплаты'] ?? null;
+            $invoice_link = $custom_fields['Ссылка на счет'] ?? null;
+
+            $number_provider_order_1 = $custom_fields['1) Номер заказа от поставщика'] ?? null;
+            $total_provider_order_1 = (int) $custom_fields['1) закупка'] ?? null;
+            $number_provider_order_2 = $custom_fields['2) Номер заказа от поставщика'] ?? null;
+            $total_provider_order_2 = (int) $custom_fields['2) закупка'] ?? null;
+            $number_provider_order_3 = $custom_fields['3) Номер заказа от поставщика'] ?? null;
+            $total_provider_order_2 = (int) $custom_fields['3) закупка'] ?? null;
+
+            $sum_of_delivery = (int) $custom_fields['Доставка'] ?? null;
+            $sum_of_lifting = (int) $custom_fields['Разгрузка/подъем'] ?? null;
+
+            $date_delivery_pvz = $custom_fields['Дата доставки на ПВЗ'] ?? null;
+            $date_delivery_customer = $custom_fields['Дата отгрузки клиенту'] ?? null;
+
+            $delivery_address = $custom_fields['Адрес'] ?? null;
+
+            $payment_form = $custom_fields['Форма оплаты'] ?? null;
+            $payment_status = $custom_fields['Оплачено'] ?? null;
+
+            $zakupka = (int) $custom_fields['Всего закупка'] ?? null;
+
+            $online_department = (int) $custom_fields['Итого Онлайн отдел'] ?? null;
+            $forward = (int) $custom_fields['Итого Форвард'] ?? null;
+
+            $designer = $custom_fields['Дизайнер'] ?? null;
+            $car_driver = $custom_fields['Водитель'] ?? null;
+
+        $message = "📌 *Сделка перешла на новый этап!*\n\n"
+            . "🆔 Ссылка на счет: `{$invoice_link}`\n"
+            . "🆔 Статус оплаты: `{$payment_status}`\n"
+            . "🕒 Дата доставки: " . $date_delivery_customer;
 
 
         // 5. Если сделка перешла на нужный этап — отправляем в Telegram
-        if ($newStatusId == $targetStatusId) {
-           $this->sendTelegramNotification($leadId, $newStatusId, $pipelineId, $invoiceLink);
+        if ($status_id == $targetStatusId) {
+           $this->sendTelegramNotification($id, $status_id, $pipeline_id, $invoice_link);
         }
 
         // 6. Возвращаем успешный ответ, чтобы amoCRM не повторяла запрос
         return response()->json(['status' => 'success'], 200);
     }
 
-    private function sendTelegramNotification($leadId, $statusId, $pipelineId, $title)
+    private function sendTelegramNotification($message)
     {
         $botToken = config('services.telegram.bot_token');
         $chatId = config('services.telegram.chat_id');
@@ -57,12 +98,7 @@ class AmoCrmWebhookController extends Controller
             return;
         }
 
-        $message = "📌 *Сделка перешла на новый этап!*\n\n"
-            . "🆔 ID сделки: `{$leadId}`\n"
-            . "🆔 Ссылка: `{$title}`\n"
-            . "📊 Новый этап: `{$statusId}`\n"
-            . "🔀 Воронка: `{$pipelineId}`\n"
-            . "🕒 Время: " . now()->format('d.m.Y H:i:s');
+
 
         $url = "https://api.telegram.org/bot{$botToken}/sendMessage";
 
