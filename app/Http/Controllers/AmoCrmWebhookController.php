@@ -97,14 +97,14 @@ class AmoCrmWebhookController extends Controller
 
         // 5. Если сделка перешла на нужный этап — отправляем в Telegram
         if ($status_id == $targetStatusId) {
-           $this->sendTelegramNotification($message);
+           $this->sendTelegramNotification($message, $url_yandex_map);
         }
 
         // 6. Возвращаем успешный ответ, чтобы amoCRM не повторяла запрос
         return response()->json(['status' => 'success'], 200);
     }
 
-    private function sendTelegramNotification($message, $url_yandex_map)
+    private function sendTelegramNotification($message, $url)
     {
         $botToken = config('services.telegram.bot_token');
         $chatId = config('services.telegram.chat_id');
@@ -131,7 +131,7 @@ class AmoCrmWebhookController extends Controller
             'parse_mode' => 'Markdown',
                 // Передаем link_preview_options как JSON-строку
                 'link_preview_options' => json_encode([
-                    'url'               => $url_yandex_map, // Указываем, какую ссылку использовать для превью
+                    'url'               => $url, // Указываем, какую ссылку использовать для превью
                     'prefer_large_media' => true,       // Просим показать большое медиа (если возможно)
                     'show_above_text'    => false,      // Оставляем превью под текстом
                 ]),
