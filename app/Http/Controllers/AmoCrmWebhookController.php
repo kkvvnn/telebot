@@ -81,7 +81,7 @@ class AmoCrmWebhookController extends Controller
 
         // 5. Если сделка перешла на нужный этап — отправляем в Telegram
         if ($status_id == $targetStatusId) {
-           $this->sendTelegramNotification($id, $status_id, $pipeline_id, $invoice_link);
+           $this->sendTelegramNotification($message);
         }
 
         // 6. Возвращаем успешный ответ, чтобы amoCRM не повторяла запрос
