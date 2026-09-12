@@ -65,7 +65,7 @@ class AmoCrmWebhookController extends Controller
 
             $payment_form = $custom_fields['Форма оплаты'] ?? null;
             $payment_status = $custom_fields['Оплачено'] ?? null;
-            if ($payment_status !== 'Не оплачено') {
+            if ($payment_status === 'Онлайн отдел' || $payment_status === 'Форвард') {
                 $payment_status = '✅ Оплачено';
             } else {
                 $payment_status = '❌ Не оплачено';
