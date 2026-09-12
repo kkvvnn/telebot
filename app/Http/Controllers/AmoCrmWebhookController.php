@@ -65,7 +65,7 @@ class AmoCrmWebhookController extends Controller
 
             $delivery_address = $custom_fields['Адрес'] ?? null;
 //            $url_yandex_map = 'https://yandex.ru/maps/?text=' . urlencode($delivery_address);
-            $url_yandex_map = 'https://yandex.ru/maps/?text=' . $delivery_address;
+            $url_yandex_map = 'https://yandex.ru/maps/?text=' . rawurlencode($delivery_address);
 
             $payment_form = $custom_fields['Форма оплаты'] ?? null;
             $payment_status = $custom_fields['Оплачено'] ?? null;
