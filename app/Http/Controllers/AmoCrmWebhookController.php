@@ -6,6 +6,7 @@ use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class AmoCrmWebhookController extends Controller
 {
@@ -60,6 +61,7 @@ class AmoCrmWebhookController extends Controller
 
             $date_delivery_pvz = $custom_fields['Дата доставки на ПВЗ'] ?? null;
             $date_delivery_customer = $custom_fields['Дата отгрузки клиенту'] ?? null;
+            $date_delivery_customer = Carbon::createFromTimestamp($date_delivery_customer)->translatedFormat('j F Y');
 
             $delivery_address = $custom_fields['Адрес'] ?? null;
 
