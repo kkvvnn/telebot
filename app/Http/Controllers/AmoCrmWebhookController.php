@@ -64,7 +64,8 @@ class AmoCrmWebhookController extends Controller
             $date_delivery_customer = Carbon::createFromTimestamp($date_delivery_customer)->translatedFormat('j F Y');
 
             $delivery_address = $custom_fields['Адрес'] ?? null;
-            $url_yandex_map = 'https://yandex.ru/maps/?text=' . urlencode($delivery_address);
+//            $url_yandex_map = 'https://yandex.ru/maps/?text=' . urlencode($delivery_address);
+            $url_yandex_map = 'https://yandex.ru/maps/?text=' . $delivery_address;
 
             $payment_form = $custom_fields['Форма оплаты'] ?? null;
             $payment_status = $custom_fields['Оплачено'] ?? null;
@@ -87,6 +88,7 @@ class AmoCrmWebhookController extends Controller
         $message = "📌 *[{$date_now}]!*\n\n"
             . "*Счет:* [{$invoice_link}]\n"
             . "*Адрес:* `{$delivery_address}`\n"
+            . "*Адрес:* `{$url_yandex_map}`\n"
             . "*Статус оплаты:* `{$payment_status}`\n"
             . "*Дата доставки:* " . $date_delivery_customer;
 
