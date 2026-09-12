@@ -65,10 +65,9 @@ class AmoCrmWebhookController extends Controller
 
             $delivery_address = $custom_fields['Адрес'] ?? null;
 //            $url_yandex_map = 'https://yandex.ru/maps/?text=' . urlencode($delivery_address);
-            $url_yandex_map = 'https://yandex.ru/maps/?text=' . rawurlencode($delivery_address);
-            $final_url_yandex_map = Http::withOptions(['allow_redirects' => ['track_redirects' => true]])
-                ->get($url_yandex_map)
-                ->effectiveUri(); // вернёт финальный URL после всех редиректов
+//            $url_yandex_map = 'https://yandex.ru/maps/?text=' . rawurlencode($delivery_address);
+
+            $url_yandex_map = $this->get_canonical_url_yandex_map($delivery_address);
 
             $payment_form = $custom_fields['Форма оплаты'] ?? null;
             $payment_status = $custom_fields['Оплачено'] ?? null;
@@ -91,7 +90,7 @@ class AmoCrmWebhookController extends Controller
         $message = "📌 *[{$date_now}]!*\n\n"
             . "*Счет:* [{$invoice_link}]\n"
             . "*Адрес:* `{$delivery_address}`\n"
-            . "*Адрес:* `{$final_url_yandex_map}`\n"
+            . "*Адрес:* `{$url_yandex_map}`\n"
             . "*Статус оплаты:* `{$payment_status}`\n"
             . "*Дата доставки:* " . $date_delivery_customer;
 
@@ -174,6 +173,27 @@ class AmoCrmWebhookController extends Controller
         }
 
         return $result;
+    }
+
+    private function get_canonical_url_yandex_map($address): string
+    {
+        $response = Http::get('https://geocode-maps.yandex.ru/1.x/', [
+            'apikey' => config('services.yandex.api_key'),
+            'geocode' => $address,
+            'format' => 'json',
+            'results' => 1,
+        ]);
+
+        $data = $response->json();
+
+        $pos = data_get($data, 'response.GeoObjectCollection.featureMember.0.GeoObject.Point.pos');
+
+        if ($pos) {
+            // $pos имеет вид "37.617700 55.755863" (долгота широта)
+            [$longitude, $latitude] = explode(' ', $pos);
+        }
+
+        return "https://yandex.ru{$latitude},{$longitude}";
     }
 
 }
