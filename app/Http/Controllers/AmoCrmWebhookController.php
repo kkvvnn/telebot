@@ -64,10 +64,10 @@ class AmoCrmWebhookController extends Controller
             $date_delivery_customer = Carbon::createFromTimestamp($date_delivery_customer)->translatedFormat('j F Y');
 
             $delivery_address = $custom_fields['Адрес'] ?? null;
-//            $url_yandex_map = 'https://yandex.ru/maps/?text=' . urlencode($delivery_address);
+            $url_yandex_map = 'https://yandex.ru/maps/?text=' . urlencode($delivery_address);
 //            $url_yandex_map = 'https://yandex.ru/maps/?text=' . rawurlencode($delivery_address);
 
-            $url_yandex_map = $this->get_canonical_url_yandex_map($delivery_address);
+//            $url_yandex_map = $this->get_canonical_url_yandex_map($delivery_address);
 
             $payment_form = $custom_fields['Форма оплаты'] ?? null;
             $payment_status = $custom_fields['Оплачено'] ?? null;
@@ -104,7 +104,7 @@ class AmoCrmWebhookController extends Controller
         return response()->json(['status' => 'success'], 200);
     }
 
-    private function sendTelegramNotification($message)
+    private function sendTelegramNotification($message, $url_yandex_map)
     {
         $botToken = config('services.telegram.bot_token');
         $chatId = config('services.telegram.chat_id');
@@ -129,6 +129,12 @@ class AmoCrmWebhookController extends Controller
             'chat_id' => $chatId,
             'text' => $message,
             'parse_mode' => 'Markdown',
+                // Передаем link_preview_options как JSON-строку
+                'link_preview_options' => json_encode([
+                    'url'               => $url_yandex_map, // Указываем, какую ссылку использовать для превью
+                    'prefer_large_media' => true,       // Просим показать большое медиа (если возможно)
+                    'show_above_text'    => false,      // Оставляем превью под текстом
+                ]),
         ]);
 
         Log::info('Telegram response', ['body' => $response->body(), 'status' => $response->status()]);
