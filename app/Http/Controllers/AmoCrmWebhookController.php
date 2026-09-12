@@ -81,7 +81,7 @@ class AmoCrmWebhookController extends Controller
 
             $date_now = date('Y-m-d H:i:s');
 
-        $message = "📌 *[`{$date_now}`]!*\n\n"
+        $message = "📌 *[{$date_now}]!*\n\n"
             . "🆔 *Ссылка на счет:* [{$invoice_link}]\n"
             . "💲 *Статус оплаты:* `{$payment_status}`\n"
             . "🕒 *Дата доставки:* " . $date_delivery_customer;
