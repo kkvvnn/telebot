@@ -48,14 +48,14 @@ class AmoCrmWebhookController extends Controller
             $invoice_link = $custom_fields['Ссылка на счет'] ?? null;
 
             $number_provider_order_1 = $custom_fields['1) Номер заказа от поставщика'] ?? null;
-            $total_provider_order_1 = (int) $custom_fields['1) закупка'] ?? null;
+            $total_provider_order_1 = (int) ($custom_fields['1) закупка'] ?? null);
             $number_provider_order_2 = $custom_fields['2) Номер заказа от поставщика'] ?? null;
-            $total_provider_order_2 = (int) $custom_fields['2) закупка'] ?? null;
+            $total_provider_order_2 = (int) ($custom_fields['2) закупка'] ?? null);
             $number_provider_order_3 = $custom_fields['3) Номер заказа от поставщика'] ?? null;
-            $total_provider_order_2 = (int) $custom_fields['3) закупка'] ?? null;
+            $total_provider_order_2 = (int) ($custom_fields['3) закупка'] ?? null);
 
-            $sum_of_delivery = (int) $custom_fields['Доставка'] ?? null;
-            $sum_of_lifting = (int) $custom_fields['Разгрузка/подъем'] ?? null;
+            $sum_of_delivery = (int) ($custom_fields['Доставка'] ?? null);
+            $sum_of_lifting = (int) ($custom_fields['Разгрузка/подъем'] ?? null);
 
             $date_delivery_pvz = $custom_fields['Дата доставки на ПВЗ'] ?? null;
             $date_delivery_customer = $custom_fields['Дата отгрузки клиенту'] ?? null;
