@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -78,10 +79,12 @@ class AmoCrmWebhookController extends Controller
             $designer = $custom_fields['Дизайнер'] ?? null;
             $car_driver = $custom_fields['Водитель'] ?? null;
 
-        $message = "📌 *Сделка перешла на новый этап!*\n\n"
-            . "🆔 Ссылка на счет: `{$invoice_link}`\n"
-            . "💲 Статус оплаты: `{$payment_status}`\n"
-            . "🕒 Дата доставки: " . $date_delivery_customer;
+            $date_now = date('Y-m-d H:i:s');
+
+        $message = "📌 *[`{$invoice_link}`]!*\n\n"
+            . "🆔 *Ссылка на счет:* `{$invoice_link}`\n"
+            . "💲 *Статус оплаты:* `{$payment_status}`\n"
+            . "🕒 *Дата доставки:* " . $date_delivery_customer;
 
 
         // 5. Если сделка перешла на нужный этап — отправляем в Telegram
