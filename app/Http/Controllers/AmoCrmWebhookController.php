@@ -66,6 +66,9 @@ class AmoCrmWebhookController extends Controller
             $delivery_address = $custom_fields['Адрес'] ?? null;
 //            $url_yandex_map = 'https://yandex.ru/maps/?text=' . urlencode($delivery_address);
             $url_yandex_map = 'https://yandex.ru/maps/?text=' . rawurlencode($delivery_address);
+            $final_url_yandex_map = Http::withOptions(['allow_redirects' => ['track_redirects' => true]])
+                ->get($url_yandex_map)
+                ->effectiveUri(); // вернёт финальный URL после всех редиректов
 
             $payment_form = $custom_fields['Форма оплаты'] ?? null;
             $payment_status = $custom_fields['Оплачено'] ?? null;
@@ -88,7 +91,7 @@ class AmoCrmWebhookController extends Controller
         $message = "📌 *[{$date_now}]!*\n\n"
             . "*Счет:* [{$invoice_link}]\n"
             . "*Адрес:* `{$delivery_address}`\n"
-            . "*Адрес:* `{$url_yandex_map}`\n"
+            . "*Адрес:* `{$final_url_yandex_map}`\n"
             . "*Статус оплаты:* `{$payment_status}`\n"
             . "*Дата доставки:* " . $date_delivery_customer;
 
