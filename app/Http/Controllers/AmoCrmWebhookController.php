@@ -86,7 +86,7 @@ class AmoCrmWebhookController extends Controller
 
         $message = "📌 *[{$date_now}]!*\n\n"
             . "*Счет:* [{$invoice_link}]\n"
-            . "*Счет:* [{$url_yandex_map}]\n"
+            . "*Адрес:* `{$delivery_address}`\n"
             . "*Статус оплаты:* `{$payment_status}`\n"
             . "*Дата доставки:* " . $date_delivery_customer;
 
