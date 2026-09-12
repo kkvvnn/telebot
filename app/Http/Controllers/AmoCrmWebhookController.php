@@ -64,6 +64,7 @@ class AmoCrmWebhookController extends Controller
             $date_delivery_customer = Carbon::createFromTimestamp($date_delivery_customer)->translatedFormat('j F Y');
 
             $delivery_address = $custom_fields['Адрес'] ?? null;
+            $url_yandex_map = 'https://yandex.ru/maps/?text=' . urlencode($delivery_address);
 
             $payment_form = $custom_fields['Форма оплаты'] ?? null;
             $payment_status = $custom_fields['Оплачено'] ?? null;
@@ -84,9 +85,10 @@ class AmoCrmWebhookController extends Controller
             $date_now = date('Y-m-d H:i:s');
 
         $message = "📌 *[{$date_now}]!*\n\n"
-            . "🆔 *Ссылка на счет:* [{$invoice_link}]\n"
-            . "💲 *Статус оплаты:* `{$payment_status}`\n"
-            . "🕒 *Дата доставки:* " . $date_delivery_customer;
+            . "*Счет:* [{$invoice_link}]\n"
+            . "*Счет:* [{$url_yandex_map}]\n"
+            . "*Статус оплаты:* `{$payment_status}`\n"
+            . "*Дата доставки:* " . $date_delivery_customer;
 
 
         // 5. Если сделка перешла на нужный этап — отправляем в Telegram
