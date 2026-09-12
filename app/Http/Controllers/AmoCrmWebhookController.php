@@ -186,6 +186,8 @@ class AmoCrmWebhookController extends Controller
 
         $data = $response->json();
 
+        Log::info('YandexMap:', $data);
+
         $pos = data_get($data, 'response.GeoObjectCollection.featureMember.0.GeoObject.Point.pos');
 
         if ($pos) {
