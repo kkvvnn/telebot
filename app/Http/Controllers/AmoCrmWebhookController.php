@@ -93,8 +93,8 @@ class AmoCrmWebhookController extends Controller
             . "*Сумма:* `{$price}`\n"
             . "*Статус оплаты:* `{$payment_status}`\n"
             . "*Адрес:* `{$delivery_address}`\n"
-            . "*Доставка:* `{$delivery_address}`\n"
-            . "*Разгрузка/Подъем:* `{$delivery_address}`\n"
+            . "*Доставка:* `{$sum_of_delivery}`\n"
+            . "*Разгрузка/Подъем:* `{$sum_of_lifting}`\n"
             . "*Дата доставки:* " . $date_delivery_customer;
 
 
