@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class AmoCrmWebhookController extends Controller
 {
@@ -93,29 +94,17 @@ class AmoCrmWebhookController extends Controller
 
 
         
-        // 2. Генерируем уникальное имя файла
-        $fileName = 'screenshot_' . Str::random(10) . '.png';
-        $storagePath = storage_path('app/public/' . $fileName);
+        $screenshotName = 'browser_screenshot_' . time() . '.png';
+    $savePath = Storage::disk('public')->path($screenshotName);
 
-        try {
-            // 3. Делаем скриншот с помощью Browsershot
-            Browsershot::url($invoice_link)
-                ->windowSize(1920, 1080) // Задаем разрешение экрана
-                ->waitUntilNetworkIdle() // Ждем, пока загрузятся все JS-скрипты и стили
-                ->save($storagePath);    // Сохраняем в папку storage
+    // Browsershot откроет Chrome, перейдет по ссылке и сделает снимок экрана
+    Browsershot::url($invoice_link)
+        ->format('png')
+        ->windowSize(1280, 800)
+        ->waitUntilNetworkIdle() // Ждем, пока PDF загрузится
+        ->save($savePath);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Скриншот успешно создан',
-                'url' => asset('storage/' . $fileName)
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => $e->getMessage()
-            ], 500);
-        }
+    $my_url = Storage::disk('public')->url($screenshotName);
 
 
 
@@ -126,6 +115,7 @@ class AmoCrmWebhookController extends Controller
             . "*Адрес:* `{$delivery_address}`\n"
             . "*Доставка:* `{$sum_of_delivery}`\n"
             . "*Разгрузка/Подъем:* `{$sum_of_lifting}`\n"
+            . "*Разгрузка/Подъем:* `{$my_url}`\n"
             . "*Дата доставки:* " . $date_delivery_customer;
 
 
