@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Spatie\Browsershot\Browsershot;
+use Illuminate\Support\Str;
 
 class AmoCrmWebhookController extends Controller
 {
@@ -87,6 +89,35 @@ class AmoCrmWebhookController extends Controller
             $car_driver = $custom_fields['Водитель'] ?? null;
 
             $date_now = date('Y-m-d H:i:s');
+
+
+
+        
+        // 2. Генерируем уникальное имя файла
+        $fileName = 'screenshot_' . Str::random(10) . '.png';
+        $storagePath = storage_path('app/public/' . $fileName);
+
+        try {
+            // 3. Делаем скриншот с помощью Browsershot
+            Browsershot::url($invoice_link)
+                ->windowSize(1920, 1080) // Задаем разрешение экрана
+                ->waitUntilNetworkIdle() // Ждем, пока загрузятся все JS-скрипты и стили
+                ->save($storagePath);    // Сохраняем в папку storage
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Скриншот успешно создан',
+                'url' => asset('storage/' . $fileName)
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+
 
         $message_delivery = "📌 {$url_yandex_map}\n\n"
             . "*Счет:* [{$invoice_link}]\n"
