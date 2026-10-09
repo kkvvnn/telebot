@@ -41,7 +41,7 @@ class AmoCrmWebhookController extends Controller
         $updated_at = $lead_status['updated_at'] ?? null;
 
         // 4. Укажите ID этапа, при переходе на который нужно отправить уведомление
-        $targetStatusId = 88517678; // ЗАМЕНИТЕ НА ВАШ ID ЭТАПА
+        $targetStatusId_delivery = 88517678; // статус этапа СОГЛАСОВАНИЕ ДОСТАВКИ
 
         // Извлекаем кастомные поля в удобный ассоциативный массив
             $custom_fields = $this->parseCustomFields($lead_status['custom_fields'] ?? []);
@@ -73,9 +73,9 @@ class AmoCrmWebhookController extends Controller
             $payment_form = $custom_fields['Форма оплаты'] ?? null;
             $payment_status = $custom_fields['Оплачено'] ?? null;
             if ($payment_status === 'Онлайн отдел' || $payment_status === 'Форвард') {
-                $payment_status = '✅ Оплачено';
+                $payment_status = '✅ ОПЛАЧЕН';
             } else {
-                $payment_status = '❌ Не оплачено';
+                $payment_status = '❌ НЕ ОПЛАЧЕН';
             }
 
             $zakupka = (int) ($custom_fields['Всего закупка'] ?? null);
@@ -88,7 +88,7 @@ class AmoCrmWebhookController extends Controller
 
             $date_now = date('Y-m-d H:i:s');
 
-        $message = "📌 {$url_yandex_map}\n\n"
+        $message_delivery = "📌 {$url_yandex_map}\n\n"
             . "*Счет:* [{$invoice_link}]\n"
             . "*Сумма:* `{$price}`\n"
             . "*Статус оплаты:* `{$payment_status}`\n"
@@ -99,8 +99,8 @@ class AmoCrmWebhookController extends Controller
 
 
         // 5. Если сделка перешла на нужный этап — отправляем в Telegram
-        if ($status_id == $targetStatusId) {
-           $this->sendTelegramNotification($message, $url_yandex_map);
+        if ($status_id == $targetStatusId_delivery) {
+           $this->sendTelegramNotification($message_delivery, $url_yandex_map);
         }
 
         // 6. Возвращаем успешный ответ, чтобы amoCRM не повторяла запрос
